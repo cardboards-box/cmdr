@@ -143,7 +143,7 @@ public static class StatementUtil
         //Get the arguments for the statement and continue parsing
         var keyword = keyOrComment.Before;
         var args = tokens.GetUntil(IndicatorType.StatementTerminator, IndicatorType.BlockStart).ToArray();
-        var arguments = args.Concat();
+        var arguments = args.Concat().Trim();
         //Get the last argument token
         var last = args.LastOrDefault() ?? throw new NginxParserException("Unexpected end of stream - No last argument for statement");
 
@@ -173,9 +173,6 @@ public static class StatementUtil
         while (true)
         {
             var (statement, blockEnd) = ParseStatement(tokens, true);
-            //if (statement is null && !blockEnd)
-            //    throw new NginxParserException("Unexpected end of stream - No block close", tokens.Current);
-
             if (statement is not null)
                 statements.Add(statement);
 
@@ -215,5 +212,60 @@ public static class StatementUtil
         }
 
         return sb.ToString();
+    }
+
+    /// <summary>
+    /// Converts a collection of statements to an nginx configuration string
+    /// </summary>
+    /// <param name="statements">The statements to serialize</param>
+    /// <param name="level">The level to offset each block at</param>
+    /// <param name="buff">The characters to use to show a new block</param>
+    /// <returns>The NGINX config string</returns>
+    public static string Serialize(this IStatements statements, int level = 0, string buff = "\t")
+    {
+        var sb = new StringBuilder();
+        var buffer = string.Join("", Enumerable.Repeat(buff, level));
+
+        foreach (var statement in statements)
+        {
+            switch (statement)
+            {
+                case Comment comment:
+                    sb.AppendLine($"{buffer}#{comment.Text}");
+                    break;
+                case Directive directive:
+                    var args = string.IsNullOrWhiteSpace(directive.Arguments) ? "" : $" {directive.Arguments}";
+                    sb.AppendLine($"{buffer}{directive.Keyword}{args};");
+                    break;
+                case Block block:
+                    var bargs = string.IsNullOrWhiteSpace(block.Arguments) ? "" : $" {block.Arguments}";
+                    sb.AppendLine($"{buffer}{block.Keyword}{bargs} {{");
+                    sb.AppendLine(block.Statements.Serialize(level + 1, buff));
+                    sb.AppendLine($"{buffer}}}");
+                    break;
+            }
+        }
+
+        return sb.ToString();
+    }
+
+    /// <summary>
+    /// Converts the given JSON safe statements into a collection of <see cref="IStatement"/>s
+    /// </summary>
+    /// <param name="statements">The statements to convert</param>
+    /// <returns>The converted statements</returns>
+    public static IStatements FromJsonSafe(this IEnumerable<Statement> statements)
+    {
+        return statements.Select(t => t.ToStatement());
+    }
+
+    /// <summary>
+    /// Converts the given <see cref="IStatements"/> into a collection of JSON safe statements
+    /// </summary>
+    /// <param name="statements">The statements to convert</param>
+    /// <returns>The converted statements</returns>
+    public static IEnumerable<Statement> ToJsonSafe(this IStatements statements)
+    {
+        return statements.Select(Statement.FromStatement);
     }
 }
