@@ -239,8 +239,9 @@ public static class StatementUtil
                     break;
                 case Block block:
                     var bargs = string.IsNullOrWhiteSpace(block.Arguments) ? "" : $" {block.Arguments}";
+                    sb.AppendLine();
                     sb.AppendLine($"{buffer}{block.Keyword}{bargs} {{");
-                    sb.AppendLine(block.Statements.Serialize(level + 1, buff));
+                    sb.AppendLine(block.Statements.Serialize(level + 1, buff).TrimEnd());
                     sb.AppendLine($"{buffer}}}");
                     break;
             }

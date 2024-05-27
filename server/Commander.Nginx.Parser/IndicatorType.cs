@@ -37,4 +37,8 @@ public enum IndicatorType
     /// Indicates an escape character
     /// </summary>
     Escape,
+    /// <summary>
+    /// Indicates that the character should be ignored
+    /// </summary>
+    Ignore,
 }

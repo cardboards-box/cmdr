@@ -1,0 +1,8 @@
+{
+  "paths": [
+    "extensions.sql",
+
+    "Tables/roles.sql",
+    "Tables/request_log.sql"
+  ]
+}

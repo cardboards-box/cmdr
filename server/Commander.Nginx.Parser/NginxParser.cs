@@ -34,6 +34,7 @@ public class NginxParser(TextReader _reader) : INginxParser
         { ' ', IndicatorType.Whitespace},
         {'\t', IndicatorType.Whitespace},
         {'\n', IndicatorType.NewLine},
+        {'\r', IndicatorType.Ignore },
         { ';', IndicatorType.StatementTerminator},
         { '{', IndicatorType.BlockStart},
         { '}', IndicatorType.BlockEnd},
@@ -88,6 +89,9 @@ public class NginxParser(TextReader _reader) : INginxParser
                 continue;
             }
 
+            if (type == IndicatorType.Ignore)
+                continue;
+
             if (lastWasEscape)
             {
                 sb.Append(ch);
@@ -104,7 +108,7 @@ public class NginxParser(TextReader _reader) : INginxParser
 
             var output = sb.ToString();
             yield return new Token(start, index, output, ch, type);
-            start = index;
+            start = index + 1;
             sb.Clear();
             lastWasEscape = false;
         }

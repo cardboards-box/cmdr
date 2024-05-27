@@ -1,0 +1,18 @@
+CREATE TABLE IF NOT EXISTS cmdr_request_log (
+	id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+	
+	profile_id UUID,
+	start_time TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+	end_time TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+	url TEXT NOT NULL,
+	code INTEGER NOT NULL,
+	body TEXT,
+	stack_trace TEXT,
+
+	created_by UUID,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+	updated_by UUID,
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+	deleted_by UUID,
+	deleted_at TIMESTAMP
+);

@@ -12,6 +12,9 @@ global using CardboardBox.Json;
 global using CardboardBox.Setup;
 global using CommandLine;
 
+global using Commander.Core;
+global using Commander.Core.Requesting;
+
 global using Dapper;
 
 global using Microsoft.Extensions.Configuration;
