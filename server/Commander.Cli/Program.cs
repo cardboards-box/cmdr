@@ -4,7 +4,7 @@ var desktop = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
 //Look for the nginx.conf file on the desktop
 var file = Path.Combine(desktop, "nginx.conf");
 //Create a parser from a file
-var parser = NginxParser.FromFile(file);
+using var parser = NginxParser.FromFile(file);
 //Parse all of the statements in the file
 var statements = parser.Parse().ToArray();
 
